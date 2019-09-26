@@ -7,6 +7,8 @@ namespace App\AccountancyModule\CampModule;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\DTO\Participant\Participant;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
 use Model\ExcelService;
@@ -117,7 +119,8 @@ class ParticipantPresenter extends BasePresenter
     public function actionExportExcel(int $aid) : void
     {
         try {
-            $participantsDTO = $this->eventService->getParticipants()->getAll($this->event->getId()->toInt());
+            /** @var Participant[] $participantsDTO */
+            $participantsDTO = $this->queryBus->handle(new CampParticipantListQuery($this->event->getId()));
             $spreadsheet     = $this->excelService->getCampParticipants($participantsDTO);
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
