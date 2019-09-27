@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event\Repositories;
 
+use Model\DTO\Event\StatisticsItem;
 use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\SkautisEventId;
@@ -22,4 +23,9 @@ interface IEventRepository
     public function update(Event $event) : void;
 
     public function getNewestEventId() : ?int;
+
+    /**
+     * @return StatisticsItem[]
+     */
+    public function getStatistics(SkautisEventId $eventId) : array;
 }

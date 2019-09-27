@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis;
 
+use Model\DTO\Event\StatisticsItem;
 use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\Repositories\IEventRepository;
@@ -80,6 +81,22 @@ final class EventRepository implements IEventRepository
         }
 
         return max($ids);
+    }
+
+    /**
+     * @return StatisticsItem[]
+     */
+    public function getStatistics(SkautisEventId $eventId) : array
+    {
+        $skautisData = $this->webService->EventStatisticAllEventGeneral(['ID_EventGeneral' => $eventId->toInt()]);
+
+        $result = [];
+
+        foreach ($skautisData as $row) {
+            $result[$row->ID_ParticipantCategory] = new StatisticsItem($row->ParticipantCategory, $row->Count);
+        }
+
+        return $result;
     }
 
     private function createEvent(stdClass $skautisEvent) : Event

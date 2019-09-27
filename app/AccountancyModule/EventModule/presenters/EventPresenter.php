@@ -22,6 +22,7 @@ use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventTypes;
+use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisEventId;
 use Model\ExportService;
 use Model\Logger\Log\Type;
@@ -45,17 +46,22 @@ class EventPresenter extends BasePresenter
     /** @var LoggerService */
     private $loggerService;
 
+    /** @var IEventRepository */
+    private $eventRepository;
+
     public function __construct(
         ExportService $exportService,
         IFunctionsControlFactory $functionsFactory,
         PdfRenderer $pdf,
-        LoggerService $loggerService
+        LoggerService $loggerService,
+        IEventRepository $eventRepository
     ) {
         parent::__construct();
         $this->exportService    = $exportService;
         $this->functionsFactory = $functionsFactory;
         $this->pdf              = $pdf;
         $this->loggerService    = $loggerService;
+        $this->eventRepository  = $eventRepository;
     }
 
     public function renderDefault(?int $aid) : void
@@ -86,7 +92,7 @@ class EventPresenter extends BasePresenter
         ));
 
         $this->template->setParameters([
-            'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
+            'statistic' => $this->eventRepository->getStatistics(new SkautisEventId($this->aid)),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
