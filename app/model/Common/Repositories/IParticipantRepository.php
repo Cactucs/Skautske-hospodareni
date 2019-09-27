@@ -28,4 +28,8 @@ interface IParticipantRepository
     public function createCampParticipant(SkautisCampId $eventId, ParticipantCreation $participant) : void;
 
     public function createEventParticipant(SkautisEventId $eventId, ParticipantCreation $participant) : void;
+
+    public function removeCampParticipant(int $participantId) : void;
+
+    public function removeEventParticipant(int $participantId) : void;
 }
